@@ -4,18 +4,18 @@
 #include<math.h>
 #include<stack>
 #include "tools.h"
-#include <mmsystem.h>//²¥·Å±³¾°ÒôÀÖµÄÍ·ÎÄ¼ş
-#pragma comment(lib,"winmm.lib")//²¥·ÅÒôÀÖĞèÒªµÄ¿âÎÄ¼ş
+#include <mmsystem.h>//æ’­æ”¾èƒŒæ™¯éŸ³ä¹çš„å¤´æ–‡ä»¶
+#pragma comment(lib,"winmm.lib")//æ’­æ”¾éŸ³ä¹éœ€è¦çš„åº“æ–‡ä»¶
 #define WIDTH 580
 #define HEIGHT 580
 /// <summary>
-/// 1.³õÊ¼»¯´°¿Ú
-/// 2.Ëæ»úÉú³É·½¿é
-/// 3.µã»÷
-/// 4.ÅĞ¶ÏÊÇ·ñ¿ÉÒÔÏû³ı
-/// 5.Ïû³ı
-/// 6.·½¿éÏÂÂä
-/// 7.¸üĞÂ´°¿Ú
+/// 1.åˆå§‹åŒ–çª—å£
+/// 2.éšæœºç”Ÿæˆæ–¹å—
+/// 3.ç‚¹å‡»
+/// 4.åˆ¤æ–­æ˜¯å¦å¯ä»¥æ¶ˆé™¤
+/// 5.æ¶ˆé™¤
+/// 6.æ–¹å—ä¸‹è½
+/// 7.æ›´æ–°çª—å£
 /// </summary>
 IMAGE block_[4];
 IMAGE bg;
@@ -47,12 +47,12 @@ void init() {
 	for (int i = 0; i < 10; i++) {
 		for (int j = 0; j < 10; j++) {
 			blocks[i][j].type = 1 + rand() % 4;
-			blocks[i][j].row = i;
-			blocks[i][j].col = j;
-			blocks[i][j].x = 44 + j * (Step_size - 1);
-			blocks[i][j].y = 39 + i * (Step_size - 1);
-			blocks[i][j].isChecked = false;
-			blocks[i][j].tmd = 255;
+			blocks[i][j].row = i;//è¡Œ
+			blocks[i][j].col = j;//åˆ—
+			blocks[i][j].x = 44 + j * (Step_size - 1);//å‘å·¦æ¨ªåæ ‡
+			blocks[i][j].y = 39 + i * (Step_size - 1);//å‘ä¸Šçºµåæ ‡
+			blocks[i][j].isChecked = false;//æœªè¢«ç‚¹å‡»
+			blocks[i][j].tmd = 255;//é€æ˜åº¦
 		}
 	}
 }
@@ -61,38 +61,50 @@ void updateWindow() {
 	putimage(0, 0, &bg);
 	for (int i = 0; i < 10; i++) {
 		for (int j = 0; j < 10; j++) {
-			if (blocks[i][j].type > 0 && !blocks[i][j].isChecked) {
-				putimagePNG(44 + blocks[i][j].col * (Step_size - 1), 39 + blocks[i][j].row * (Step_size - 1), &block_[blocks[i][j].type - 1]);
+			if (blocks[i][j].type > 0 && !blocks[i][j].isChecked) {//ç±»åˆ«å¤§äº0ä¸”æœªè¢«ç‚¹å‡»
+				putimagePNG(44 + blocks[i][j].col * (Step_size - 1), 39 + blocks[i][j].row * (Step_size - 1), &block_[blocks[i][j].type - 1]);//å›¾ç‰‡åˆå§‹åŒ–
 			}
 		}
 	}
 	EndBatchDraw();
 }
 void check(int x, int y, int type) {
-	// ¼ì²é±ß½ç
-	if (blocks[x][y].isChecked) return;
-	if (x < 0 || x >= 10 || y < 0 || y >= 10) {
+	// æ£€æŸ¥è¾¹ç•Œ
+	if (blocks[x][y].isChecked) {
 		return;
 	}
-	if (blocks[x][y].type == type && !blocks[x][y].isChecked) {
-		blocks[x][y].isChecked = true;  // ±ê¼ÇÎªÒÑ¼ì²é
+	else if (x < 0 || x >= 10 || y < 0 || y >= 10) {
+		return;
+	}
+	else if (blocks[x][y].type == type && !blocks[x][y].isChecked) {
+		blocks[x][y].isChecked = true;  // æ ‡è®°ä¸ºå·²æ£€æŸ¥
 
-		// µİ¹éµØ¼ì²éÉÏ¡¢ÏÂ¡¢×ó¡¢ÓÒËÄ¸ö·½ÏòµÄÏàÁÚµã
-		check(x - 1, y, type);  // ÉÏ
-		check(x + 1, y, type);  // ÏÂ
-		check(x, y - 1, type);  // ×ó
-		check(x, y + 1, type);  // ÓÒ
+		// é€’å½’åœ°æ£€æŸ¥ä¸Šã€ä¸‹ã€å·¦ã€å³å››ä¸ªæ–¹å‘çš„ç›¸é‚»ç‚¹
+		check(x - 1, y, type);  // ä¸Š
+		check(x + 1, y, type);  // ä¸‹
+		check(x, y - 1, type);  // å·¦
+		check(x, y + 1, type);  // å³
 	}
 }
 void userClick() {
+	//ç”¨æˆ·ç‚¹å‡»æ“ä½œ
 	ExMessage msg;
 	if (peekmessage(&msg) && msg.message == WM_LBUTTONDOWN) {
 		if (msg.x < off_x || msg.y < off_y) return;
 		int col = (msg.x - off_x) / Step_size;
 		int row = (msg.y - off_y) / Step_size;
 		if (col < 0 || row < 0 || col > 10 || row > 10) return;
-		printf("(%d,%d)\n", row, col);
+		printf("ç‚¹å‡»åæ ‡ï¼š(%d,%d)\n", row, col);
+		//æ£€æŸ¥è¯¥ç‚¹ï¼Œä¼ å…¥åæ ‡å’Œç‚¹çš„ç±»å‹
 		check(row, col, blocks[row][col].type);
+		for (int i = 0; i < 10; i++) {
+			for (int j = 0; j < 10; j++) {
+				if (blocks[i][j].isChecked) {
+					printf("ç»è¿‡æ£€æŸ¥ï¼Œè¢«éå†çš„ç‚¹ï¼šï¼ˆ%d,%dï¼‰", i, j);
+				}
+			}
+			printf("\n");
+		}
 	}
 }
 void exchange(int row1, int col1, int row2, int col2) {
@@ -105,18 +117,11 @@ void exchange(int row1, int col1, int row2, int col2) {
 	blocks[row2][col2].col = col2;
 }
 void updateGame() {
-	//½µÂä
-	for (int i = 9; i >= 1; i--) {
-		for (int j = 1; j <= 9; j++) {
+	//é™è½
+	for (int i = 9; i >= 0; i--) {
+		for (int j = 0; j <= 9; j++) {
 			if (blocks[i][j].isChecked) {
-				printf("Ïû³ıµã(%d,%d)", i, j);
-			}
-		}
-	}
-	for (int i = 9; i >= 1; i--) {
-		for (int j = 1; j <= 9; j++) {
-			if (blocks[i][j].isChecked) {
-				for (int k = i - 1; k >= 1; k--) {
+				for (int k = i - 1; k >= 0; k--) {
 					if (!blocks[k][j].isChecked) {
 						exchange(k, j, i, j);
 						break;
@@ -126,21 +131,23 @@ void updateGame() {
 			}
 		}
 	}
-	//Éú³ÉĞÂµÄ·½¿é½øĞĞ¸üĞÂ
-	int n = 0;
-	for (int j = 1; j <= 9; j++) {
 
-		for (int i = 9; i >= 1; i--) {
-			if (blocks[i][j].isChecked) {
-				blocks[i][j].type = 1 + rand() % 4;
-				blocks[i][j].y = 39 + i * (Step_size - 1);
-				n++;
-				blocks[i][j].isChecked = false;
-			}
-		}
-	}
+	////ç”Ÿæˆæ–°çš„æ–¹å—è¿›è¡Œæ›´æ–°
+	//int n = 0;
+	//for (int j = 1; j <= 9; j++) {
+
+	//	for (int i = 9; i >= 1; i--) {
+	//		if (blocks[i][j].isChecked) {
+	//			blocks[i][j].type = 1 + rand() % 4;
+	//			blocks[i][j].y = 39 + i * (Step_size - 1);
+	//			n++;
+	//			blocks[i][j].isChecked = false;
+	//		}
+	//	}
+	//}
 }
 int main(void) {
+	//åˆå§‹åŒ–
 	init();
 	for (int i = 0; i < 10; i++) {
 		for (int j = 0; j < 10; j++) {
@@ -148,7 +155,9 @@ int main(void) {
 		}
 		printf("\n");
 	}
+	//æ›´æ–°çª—å£
 	updateWindow();
+	//å¾ªç¯
 	while (time_ < 100000) {
 		userClick();
 
