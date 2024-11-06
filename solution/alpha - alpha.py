@@ -1,29 +1,15 @@
 import time
 import random
-lis = [[2, 4, 1, 3, 2, 1, 4, 3, 2, 1, 3, 3, 4, 1, 1, 3, 4, 3, 3, 3],
-       [1, 2, 3, 3, 1, 1, 2, 1, 4, 1, 4, 4, 4, 2, 2, 4, 3, 3, 2, 4],
-       [1, 2, 1, 1, 4, 1, 3, 3, 3, 4, 4, 3, 1, 1, 1, 1, 3, 1, 1, 1],
-       [3, 1, 3, 1, 2, 2, 4, 2, 3, 1, 4, 3, 4, 3, 2, 2, 3, 2, 1, 3],
-       [1, 3, 1, 1, 3, 3, 4, 3, 3, 1, 4, 2, 1, 4, 1, 2, 2, 1, 1, 1],
-       [4, 3, 4, 2, 3, 1, 1, 4, 4, 2, 2, 2, 4, 3, 4, 4, 3, 2, 2, 2],
-       [4, 3, 2, 2, 3, 2, 2, 4, 4, 4, 4, 1, 4, 4, 4, 1, 2, 3, 1, 2],
-       [4, 1, 2, 1, 1, 4, 2, 1, 1, 4, 3, 1, 2, 3, 4, 3, 1, 3, 4, 1],
-       [4, 2, 4, 3, 3, 4, 2, 1, 1, 3, 2, 3, 3, 2, 2, 4, 2, 3, 1, 1],
-       [4, 1, 2, 2, 1, 2, 1, 3, 3, 1, 2, 4, 1, 2, 4, 4, 2, 1, 4, 3],
-       [3, 4, 3, 1, 3, 3, 3, 2, 1, 3, 3, 2, 2, 4, 2, 2, 4, 4, 2, 2],
-       [1, 2, 1, 2, 4, 4, 1, 3, 1, 3, 1, 3, 3, 2, 1, 2, 3, 2, 4, 3],
-       [1, 2, 1, 3, 3, 1, 2, 4, 2, 1, 3, 2, 3, 4, 4, 2, 4, 4, 1, 2],
-       [4, 1, 3, 3, 2, 2, 3, 3, 3, 4, 3, 1, 4, 4, 1, 2, 2, 3, 1, 3],
-       [4, 3, 4, 2, 3, 2, 2, 1, 2, 4, 1, 3, 4, 1, 1, 2, 3, 3, 1, 3],
-       [1, 3, 4, 1, 3, 3, 2, 2, 3, 2, 3, 1, 2, 2, 1, 1, 3, 1, 1, 4],
-       [2, 3, 2, 2, 2, 3, 2, 2, 2, 4, 2, 3, 4, 1, 3, 3, 3, 3, 2, 4],
-       [3, 3, 4, 1, 3, 4, 4, 3, 2, 3, 3, 3, 3, 2, 3, 3, 2, 1, 4, 2],
-       [4, 1, 4, 3, 2, 4, 2, 1, 2, 2, 3, 3, 1, 4, 1, 3, 2, 1, 3, 3],
-       [4, 3, 2, 3, 2, 2, 2, 1, 3, 1, 1, 1, 1, 1, 4, 3, 2, 1, 4, 2]]
+lis  = [[3, 1, 2, 2, 1, 4],
+       [2, 1, 1, 1, 4, 4],
+       [2, 1, 1, 2, 4, 1],
+       [3, 3, 2, 3, 3, 3],
+       [3, 1, 4, 2, 1, 2],
+       [1, 2, 2, 4, 4, 4]]
 col, row = len(lis), len(lis[0])
 copy_lis = [[0 for i in range(col)] for j in range(row)]
 
-
+#方块类
 class blocks:
     def __init__(self, x, y, num):
         self.x = x
@@ -31,13 +17,13 @@ class blocks:
         self.num = num
         self.if_checked = False
 
-
+#init
 for i in range(col):
     for j in range(row):
         block = blocks(i, j, lis[i][j])
         copy_lis[i][j] = block
 
-
+#递归寻找
 def find_point(x, y, num, lis_0, need_to_clear):
     if x < 0 or x > (col - 1) or y < 0 or y > (row - 1):
         return
@@ -54,7 +40,7 @@ def find_point(x, y, num, lis_0, need_to_clear):
         find_point(x, y - 1, num, lis_0, need_to_clear)
     return need_to_clear
 
-
+#开始寻找
 def find(x, y, num, lis):
     need_to_clear_ = []
     for i in range(col):
@@ -65,7 +51,7 @@ def find(x, y, num, lis):
         return list_1
     return []
 
-
+#更新
 def update(lis, x, y):
     need_to_clear = find(x, y, lis[x][y].num, lis)
     # print(need_to_clear)
@@ -85,7 +71,7 @@ def update(lis, x, y):
                         break
     return lis
 
-
+#计算得分
 def sum_lis(lis_1):
     sum = 0
     for i in range(col):
@@ -94,7 +80,7 @@ def sum_lis(lis_1):
                 sum += 1
     return sum
 
-
+#寻找所有可以点击的点
 def find_all_point(lis):
     dir = {}
     k = 0
@@ -114,24 +100,26 @@ def find_all_point(lis):
                 k += 1
                 clear_list.clear()
     # 随机打乱
-    dir = dict(sorted(dir.items(), key=lambda x: random.random()))
+    # dir = dict(sorted(dir.items(), key=lambda x: random.random()))
     return dir
 
-
+#alpha - alpha 算法
 def alpha(map, map_sum, points, click_points):
     minValue = map_sum
     best_click_points = click_points[:]
     for point in points:
+        a = map_sum
         x, y = points[point][0], points[point][1]
         new_click_points = click_points + [(x, y)]
         update_map = update(map, x, y)
         next_points = find_all_point(update_map)
         next_map_sum = sum_lis(update_map)
-        childValue, next_click_points = alpha(update_map, next_map_sum, next_points, new_click_points)
-        if childValue < minValue:
+        a+=next_map_sum
+        childValue, next_click_points = alpha(update_map, a, next_points, new_click_points)
+        if childValue > minValue:
             minValue = childValue
             best_click_points = next_click_points
-        if childValue >= minValue:
+        if childValue <= minValue:
             break
     return minValue, best_click_points
 
